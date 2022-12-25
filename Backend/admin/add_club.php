@@ -19,29 +19,43 @@ if ($count == 1) {
     $club_id = $row['admin_id'];
     $club_name = $row['name'];
 
-    // Send additional Club details to be added
-    $head_name = $_POST['head_name'];
-    $contact = $_POST['contact'];
-    $head_image = $_POST['head_image'];
-    $club_image = $_POST['club_image'];
-    $about_club = $_POST['about_club'];
+    // Check if club already exists.
+    $check1 = "SELECT * FROM `clubs` WHERE `club_id` = '$club_id' OR `club_name` = '$club_name' ";
+    $result1 = mysqli_query($conn, $check1);
+    $count1 = mysqli_num_rows($result1);
 
-    // Query to add club details
-    $add = "INSERT INTO `clubs`(`club_id`, `club_name`, `head_name`, `contact`, `head_image`, `club_image`, `about_club`) VALUES ('$club_id', '$club_name','$head_name','$contact','$head_image','$club_image','$about_club')";
+    // If club already exists
+    if ($count1 == 1) {
+        echo "Club Already Exists!";
+    }
+    // Execute if club doesn't exist
+    else {
 
-    $add_query = mysqli_query($conn, $add) or die("Error adding the details of the Club.");
+        // Send additional Club details to be added
+        $head_name = $_POST['head_name'];
+        $contact = $_POST['contact'];
+        $head_image = $_POST['head_image'];
+        $club_image = $_POST['club_image'];
+        $about_club = $_POST['about_club'];
 
-    $response = new stdClass();
-    $response->message = "Club details added successfully";
-    $response->club_id = $club_id;
-    $response->club_name = $club_name;
-    $response->head_name = $head_name;
-    $response->contact = $contact;
-    $response->head_image = $head_image;
-    $response->club_image = $club_image;
-    $response->about_club = $about_club;
-    $response_JSON = json_encode($response);
-    echo $response_JSON;
+        // Query to add club details
+        $add = "INSERT INTO `clubs`(`club_id`, `club_name`, `head_name`, `contact`, `head_image`, `club_image`, `about_club`) VALUES ('$club_id', '$club_name','$head_name','$contact','$head_image','$club_image','$about_club')";
+
+        $add_query = mysqli_query($conn, $add) or die("Error adding the details of the Club.");
+
+        $response = new stdClass();
+        $response->message = "Club details added successfully";
+        $response->club_id = $club_id;
+        $response->club_name = $club_name;
+        $response->head_name = $head_name;
+        $response->contact = $contact;
+        $response->head_image = $head_image;
+        $response->club_image = $club_image;
+        $response->about_club = $about_club;
+        $response_JSON = json_encode($response);
+        echo $response_JSON;
+
+    }
 
 }
 // If invalid token or session
