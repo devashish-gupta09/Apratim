@@ -39,7 +39,7 @@ if ($count == 1) {
     // Update Head Name
     if (isset($_POST['head_name'])) {
         $head_name = $_POST['head_name'];
-        $update_head_name = "UPDATE `clubs` SET `head_name` = '$head_name' ";
+        $update_head_name = "UPDATE `clubs` SET `head_name` = '$head_name' WHERE `club_id` = '$club_id' ";
         $update_head_name = mysqli_query($conn, $update_head_name) or die("Error updating the Head Name");
         $response->head_name = $head_name;
     }
@@ -47,7 +47,7 @@ if ($count == 1) {
     // Update Contact 
     if (isset($_POST['contact'])) {
         $contact = $_POST['contact'];
-        $update_contact = "UPDATE `clubs` SET `contact` = '$contact' ";
+        $update_contact = "UPDATE `clubs` SET `contact` = '$contact' WHERE `club_id` = '$club_id' ";
         $update_contact = mysqli_query($conn, $update_contact) or die("Error updating the Club Contact");
         $response->contact = $contact;
     }
@@ -55,7 +55,7 @@ if ($count == 1) {
     // Update Head Image
     if (isset($_POST['head_image'])) {
         $head_image = $_POST['head_image'];
-        $update_head_image = "UPDATE `clubs` SET `head_image` = '$head_image' ";
+        $update_head_image = "UPDATE `clubs` SET `head_image` = '$head_image' WHERE `club_id` = '$club_id' ";
         $update_head_image = mysqli_query($conn, $update_head_image) or die("Error updating the Head Image");
         $response->head_image = $head_image;
 
@@ -64,7 +64,7 @@ if ($count == 1) {
     // Update Club Image
     if (isset($_POST['club_image'])) {
         $club_image = $_POST['club_image'];
-        $update_club_image = "UPDATE `clubs` SET `club_image` = '$club_image' ";
+        $update_club_image = "UPDATE `clubs` SET `club_image` = '$club_image' WHERE `club_id` = '$club_id' ";
         $update_club_image = mysqli_query($conn, $update_club_image) or die("Error updating the Club Image");
         $response->club_image = $club_image;
     }
@@ -72,7 +72,7 @@ if ($count == 1) {
     // Update About Club
     if (isset($_POST['about_club'])) {
         $about_club = $_POST['about_club'];
-        $update_about_club = "UPDATE `clubs` SET `about_club` = '$about_club' ";
+        $update_about_club = "UPDATE `clubs` SET `about_club` = '$about_club' WHERE `club_id` = '$club_id' ";
         $update_about_club = mysqli_query($conn, $update_about_club) or die("Error updating the Club Details");
         $response->about_club = $about_club;
     }
