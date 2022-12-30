@@ -7,12 +7,12 @@ include("db_connection.php");
 $admin_token = $_POST['admin_token'];
 
 // Query to validate admin token
-$check = "SELECT * FROM `admins` WHERE `admin_token` = '$admin_token' AND `login_status` = '1' ";
+$check = "SELECT * FROM `admins` WHERE `admin_token` = '$admin_token' ";
 $result = mysqli_query($conn, $check);
 $count = mysqli_num_rows($result);
 
 
-// Validate admin token and login status
+// Validate admin token
 if ($count == 1) {
     $row = mysqli_fetch_assoc($result);
 
