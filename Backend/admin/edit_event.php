@@ -115,16 +115,32 @@ if ($count == 1) {
         // Update Team Event or not 
         if (isset($_POST['team_event'])) {
             $team_event = $_POST['team_event'];
-            $update_team_event = "UPDATE `events` SET `team_event` = '$team_event' WHERE `event_id` = '$event_id' ";
-            $update_team_event1 = mysqli_query($conn, $update_team_event) or die("Error updating the Event team_event");
         }
 
         // Update Team Size
         if (isset($_POST['team_size'])) {
             $team_size = $_POST['team_size'];
-            $update_team_size = "UPDATE `events` SET `team_size` = '$team_size' WHERE `event_id` = '$event_id' ";
-            $update_team_size1 = mysqli_query($conn, $update_team_size) or die("Error updating the Event team_size");
         }
+
+        // Check for valid team_event and team_size combination
+        if (($team_event == 0 && $team_size == 0) || ($team_event == 1 && $team_size >= 1)) {
+            if (isset($_POST['team_event'])) {
+                $update_team_event = "UPDATE `events` SET `team_event` = '$team_event' WHERE `event_id` = '$event_id' ";
+                $update_team_event1 = mysqli_query($conn, $update_team_event) or die("Error updating the Event team_event");
+            }
+            if (isset($_POST['team_size'])) {
+                $update_team_size = "UPDATE `events` SET `team_size` = '$team_size' WHERE `event_id` = '$event_id' ";
+                $update_team_size1 = mysqli_query($conn, $update_team_size) or die("Error updating the Event team_size");
+            }
+        }
+        // Output error if team event and size combination is invalid
+        else {
+            $response->message = "Invalid Team Event & Size combination!";
+            $response_JSON = json_encode($response);
+            echo $response_JSON;
+            exit;
+        }
+
 
         // Get Event's Club name
         $query1 = "SELECT `club_name` FROM `clubs` WHERE `club_id` = '$club_id' ";
