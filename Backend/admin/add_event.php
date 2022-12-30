@@ -48,46 +48,59 @@ if ($count == 1) {
     $count1 = mysqli_num_rows($res1);
 
     if ($count1 == 0) {
-        // Query to add event details
-        $add = "INSERT INTO `events`(`event_name`, `event_date_time`, `venue`, `description`, `image`, `club_id`, `team_event`, `team_size`) VALUES ('$event_name','$event_date_time','$venue','$description','$image','$club_id', '$team_event', '$team_size') ";
-        $add_query = mysqli_query($conn, $add) or die("Error adding the Event.");
 
-        // Fetch newly added event's details
-        $fetch_new_event = "SELECT * FROM `events` WHERE `event_name` = '$event_name' AND `club_id` = '$club_id' ";
-        $res = mysqli_query($conn, $fetch_new_event);
-        $row1 = mysqli_fetch_assoc($res);
+        // Check for valid team_event and team_size combination
+        if (($team_event == 0 && $team_size == 0) || ($team_event == 1 && $team_size >= 1)) {
 
-        //Generate New Event's ID in AP23-EXXX format
-        $event_id = generateEventID($row1['event_id']);
-        // Store other Event details
-        $event_name = $row1['event_name'];
-        $event_date_time = $row1['event_date_time'];
-        $venue = $row1['venue'];
-        $description = $row1['description'];
-        $image = $row1['image'];
-        $club_id = $row1['club_id'];
-        $team_event = $row1['team_event'];
-        $team_size = $row1['team_size'];
+            // Query to add event details
+            $add = "INSERT INTO `events`(`event_name`, `event_date_time`, `venue`, `description`, `image`, `club_id`, `team_event`, `team_size`) VALUES ('$event_name','$event_date_time','$venue','$description','$image','$club_id', '$team_event', '$team_size') ";
+            $add_query = mysqli_query($conn, $add) or die("Error adding the Event.");
 
-        // Get Event's Club name
-        $query = "SELECT `club_name` FROM `clubs` WHERE `club_id` = '$club_id' ";
-        $res2 = mysqli_query($conn, $query);
-        $row2 = mysqli_fetch_assoc($res2);
-        $club_name = $row2['club_name'];
+            // Fetch newly added event's details
+            $fetch_new_event = "SELECT * FROM `events` WHERE `event_name` = '$event_name' AND `club_id` = '$club_id' ";
+            $res = mysqli_query($conn, $fetch_new_event);
+            $row1 = mysqli_fetch_assoc($res);
 
-        // Send Event details as response
-        $response->message = "New Event Created";
-        $response->event_id = $event_id;
-        $response->event_name = $event_name;
-        $response->event_date_time = $event_date_time;
-        $response->venue = $venue;
-        $response->description = $description;
-        $response->image = $image;
-        $response->club_name = $club_name;
-        $response->team_event = $team_event;
-        $response->team_size = $team_size;
-        $response_JSON = json_encode($response);
-        echo $response_JSON;
+            //Generate New Event's ID in AP23-EXXX format
+            $event_id = generateEventID($row1['event_id']);
+            // Store other Event details
+            $event_name = $row1['event_name'];
+            $event_date_time = $row1['event_date_time'];
+            $venue = $row1['venue'];
+            $description = $row1['description'];
+            $image = $row1['image'];
+            $club_id = $row1['club_id'];
+            $team_event = $row1['team_event'];
+            $team_size = $row1['team_size'];
+
+            // Get Event's Club name
+            $query = "SELECT `club_name` FROM `clubs` WHERE `club_id` = '$club_id' ";
+            $res2 = mysqli_query($conn, $query);
+            $row2 = mysqli_fetch_assoc($res2);
+            $club_name = $row2['club_name'];
+
+            // Send Event details as response
+            $response->message = "New Event Created";
+            $response->event_id = $event_id;
+            $response->event_name = $event_name;
+            $response->event_date_time = $event_date_time;
+            $response->venue = $venue;
+            $response->description = $description;
+            $response->image = $image;
+            $response->club_name = $club_name;
+            $response->team_event = $team_event;
+            $response->team_size = $team_size;
+            $response_JSON = json_encode($response);
+            echo $response_JSON;
+
+        }
+        // Output error if team event and size combination is invalid
+        else {
+            $response->message = "Invalid Team Event & Size combination!";
+            $response_JSON = json_encode($response);
+            echo $response_JSON;
+            exit;
+        }
 
     }
     // Output error if Similar Event exist in the database
