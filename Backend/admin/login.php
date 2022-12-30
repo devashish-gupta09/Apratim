@@ -6,6 +6,8 @@ include("db_connection.php");
 // Send email and password
 $email = $_POST['email'];
 $password = $_POST['password'];
+// Change password in MD5 encrypted format
+$hashed_password = md5($password);
 
 // Query to check if admin's email exists
 $check = "SELECT * FROM `admins` WHERE `email` = '$email' ";
@@ -13,7 +15,7 @@ $result = mysqli_query($conn, $check);
 $count = mysqli_num_rows($result);
 
 // Query if email and password combination exists
-$login_auth = "SELECT * FROM `admins` WHERE `email` = '$email' AND `password` = '$password' ";
+$login_auth = "SELECT * FROM `admins` WHERE `email` = '$email' AND `password` = '$hashed_password' ";
 $result1 = mysqli_query($conn, $login_auth);
 $count1 = mysqli_num_rows($result1);
 
