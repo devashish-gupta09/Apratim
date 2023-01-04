@@ -17,15 +17,15 @@ if ($count == 1) {
 
     // Get club id and name from Admin Data
     $club_id = $row['admin_id'];
-    $club_name = $row['name'];
+    $head_name = $row['name'];
 
     // Fetch Club Details from `club`
-    $query = "SELECT * FROM `clubs` WHERE `club_id` = '$club_id' AND `club_name` = '$club_name' ";
+    $query = "SELECT * FROM `clubs` WHERE `club_id` = '$club_id' AND `head_name` = '$head_name' ";
     $result1 = mysqli_query($conn, $query);
     $details = mysqli_fetch_assoc($result1);
 
     // Initialize with old values of Club
-    $head_name = $details['head_name'];
+    $club_name = $details['club_name'];
     $contact = $details['contact'];
     $head_image = $details['head_image'];
     $club_image = $details['club_image'];

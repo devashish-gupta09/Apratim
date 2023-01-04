@@ -20,7 +20,7 @@ if ($count == 1) {
     $name = $row['name'];
 
     // Query to fetch club data from Clubs
-    $check1 = "SELECT * FROM `clubs` WHERE `club_id` = '$admin_id' AND `club_name` = '$name' ";
+    $check1 = "SELECT * FROM `clubs` WHERE `club_id` = '$admin_id' AND `head_name` = '$name' ";
     $result1 = mysqli_query($conn, $check1);
     $count1 = mysqli_num_rows($result1);
 
@@ -28,7 +28,7 @@ if ($count == 1) {
     if ($count1 == 1) {
         // Store club details
         $row1 = mysqli_fetch_assoc($result1);
-
+        $club_name = $row1['club_name'];
         $head_name = $row1['head_name'];
         $contact = $row1['contact'];
         $head_image = $row1['head_image'];
@@ -39,7 +39,7 @@ if ($count == 1) {
         $response = new stdClass();
         $response->message = "Club Details";
         $response->club_id = $admin_id;
-        $response->club_name = $name;
+        $response->club_name = $club_name;
         $response->head_name = $head_name;
         $response->contact = $contact;
         $response->head_image = $head_image;
