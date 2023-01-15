@@ -150,7 +150,7 @@ if ($count == 1) {
 
         // Successful updation of the required attributes
         $response->message = "Event details updated successfully";
-        $response->event_id = $event_id;
+        $response->event_id = $event_id_char;
         $response->event_name = $event_name;
         $response->event_date_time = $event_date_time;
         $response->venue = $venue;
