@@ -3,6 +3,16 @@
 // Establish Connection
 include("db_connection.php");
 
+function generateClubID($club_id)
+{
+    if ($club_id < 10) {
+        $final_id = 'AP23-C0' . $club_id;
+    } else {
+        $final_id = 'AP23-C' . $club_id;
+    }
+    return $final_id;
+}
+
 // Send admin token to access Club Admin
 $admin_token = $_POST['admin_token'];
 
@@ -60,10 +70,13 @@ if ($count == 1) {
         $update_about_club1 = mysqli_query($conn, $update_about_club) or die("Error updating the Club Details");
     }
 
+    //Generate Club's ID in AP23-CXX format
+    $club_id_str = generateClubID($details['club_id']);
+
     // Send updated club details as response
     $response = new stdClass();
     $response->message = "Updated Club details";
-    $response->club_id = $club_id;
+    $response->club_id = $club_id_str;
     $response->club_name = $club_name;
     $response->head_name = $head_name;
     $response->contact = $contact;
