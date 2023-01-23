@@ -73,7 +73,10 @@ if ($count == 1) {
 }
 // If invalid token or session
 else {
-    echo "Invalid Admin Token";
+    $response->message = "Invalid Token or Session!";
+    $response_JSON = json_encode($response);
+    echo $response_JSON;
+    exit;
 }
 
 
