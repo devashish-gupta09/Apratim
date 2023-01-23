@@ -1,8 +1,16 @@
 <?php
 
 // Establish Connection
-include("../assets/initialize.php");
-$conn = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
+if (!defined('DB_SERVER')) {
+    require_once("../assets/initialize.php");
+}
+
+$host = DB_SERVER;
+$username = DB_USERNAME;
+$password = DB_PASSWORD;
+$database = DB_NAME;
+
+$conn = mysqli_connect($host, $username, $password, $database);
 
 if (!$conn) {
     die("Connection failed!" . mysqli_connect_error());
