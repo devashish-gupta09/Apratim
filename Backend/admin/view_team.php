@@ -92,7 +92,6 @@ if ($count == 1) {
     $i = 0;
     while ($count2) {
         $rows2 = mysqli_fetch_assoc($res2);
-        echo $rows2['user_id'];
         $query3 = "SELECT * FROM `users` WHERE `user_id` = '$rows2[user_id]' ";
         $res3 = mysqli_query($conn, $query3);
         $rows3 = mysqli_fetch_assoc($res3);
