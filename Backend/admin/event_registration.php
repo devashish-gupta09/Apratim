@@ -79,6 +79,7 @@ $check = "SELECT * FROM `admins` WHERE `admin_token` = '$admin_token' ";
 $result = mysqli_query($conn, $check);
 $count = mysqli_num_rows($result);
 
+// initate total count variables
 $total_users = 0;
 $total_teams = 0;
 
@@ -91,7 +92,6 @@ if ($count == 1) {
 
     // Send event_id to find event registration details
     $event_id = $_POST['event_id'];
-
     $event_id = generateEventIDReverse($event_id);
 
     // Check if it is a valid club event or not
@@ -110,7 +110,6 @@ if ($count == 1) {
 
         $i = 0;
         while ($count2) {
-
             $rows2 = mysqli_fetch_assoc($res2);
             $rows2['event_id'] = generateEventID($rows2['event_id']);
             $response[$i]['event_id'] = $rows2['event_id'];
@@ -123,6 +122,7 @@ if ($count == 1) {
             $response[$i]['user_id'] = $rows2['user_id'];
             $response[$i]['registration_time'] = $rows2['registration_time'];
 
+            // For team events
             if ($team_event) {
                 $query3 = "SELECT * FROM `teams` WHERE `team_id` = '$rows2[team_id]'";
                 $res4 = mysqli_query($conn, $query3);
@@ -130,9 +130,9 @@ if ($count == 1) {
                 $response[$i]['team_name'] = $rows4['team_name'];
                 $rows2['team_id'] = generateTeamID($rows2['team_id']);
                 $response[$i]['team_id'] = $rows2['team_id'];
-            } else {
-                // if ($rows2['team_id'] != 0)
-                //     $rows2['team_id'] = generateTeamID($rows2['team_id']);
+            }
+            // For non-team events
+            else {
                 $response[$i]['team_id'] = $rows2['team_id'];
                 $total_users++;
             }
@@ -144,18 +144,20 @@ if ($count == 1) {
         $final_response['message'] = "Invalid Event ID with the Club";
     }
 
+    // Count total teams registered
     if ($team_event) {
         $query4 = "SELECT DISTINCT `team_id` FROM `event_registration` WHERE `team_id`!= '0' ";
         $res5 = mysqli_query($conn, $query4);
         $total_teams = mysqli_num_rows($res5);
         $final_response['total_teams'] = $total_teams;
-    } else {
-        // echo "Total users: ";
+    }
+    // Count total users registered
+    else {
         $final_response['total_users'] = $total_users;
     }
 
+    // Send response json
     $final_response['registration'] = $response;
-    // echo $response_JSON;
     $final_response_JSON = json_encode($final_response);
     echo $final_response_JSON;
 }
