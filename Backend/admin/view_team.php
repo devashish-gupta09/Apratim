@@ -83,40 +83,52 @@ $count = mysqli_num_rows($result);
 if ($count == 1) {
     // Input team_id
     $team_id = $_POST['team_id'];
-    $team_id = generateTeamIDReverse($team_id);
 
-    // Get team details
-    $query = "SELECT * FROM `teams` WHERE `team_id` = '$team_id' ";
-    $res = mysqli_query($conn, $query);
-    $rows = mysqli_fetch_assoc($res);
-    $response->team_id = generateTeamID($rows['team_id']);
-    $response->team_name = $rows['team_name'];
+    // Check for valid Team ID string size
+    if (strlen($team_id) == 9) {
+        $team_id = generateTeamIDReverse($team_id);
 
-    // Get event associated with the team
-    $query1 = "SELECT * FROM `events` WHERE `event_id` = '$rows[event_id]' ";
-    $res1 = mysqli_query($conn, $query1);
-    $rows1 = mysqli_fetch_assoc($res1);
-    $response->event_id = generateEventID($rows['event_id']);
-    $response->event_name = $rows1['event_name'];
+        // Get team details
+        $query = "SELECT * FROM `teams` WHERE `team_id` = '$team_id' ";
+        $res = mysqli_query($conn, $query);
+        $rows = mysqli_fetch_assoc($res);
 
-    // Get users registered with the team
-    $query2 = "SELECT * FROM `event_registration` WHERE `team_id` = '$team_id' ";
-    $res2 = mysqli_query($conn, $query2);
-    $count2 = mysqli_num_rows($res2);
-    $i = 0;
-    while ($count2) {
-        $rows2 = mysqli_fetch_assoc($res2);
-        $query3 = "SELECT * FROM `users` WHERE `user_id` = '$rows2[user_id]' ";
-        $res3 = mysqli_query($conn, $query3);
-        $rows3 = mysqli_fetch_assoc($res3);
-        $users[$i]['user_id'] = generateUserID($rows3['user_id']);
-        $users[$i]['name'] = $rows3['name'];
-        $count2--;
-        $i++;
+        // Check for valid Team ID
+        if ($rows) {
+            $response->team_id = generateTeamID($rows['team_id']);
+            $response->team_name = $rows['team_name'];
+
+            // Get event associated with the team
+            $query1 = "SELECT * FROM `events` WHERE `event_id` = '$rows[event_id]' ";
+            $res1 = mysqli_query($conn, $query1);
+            $rows1 = mysqli_fetch_assoc($res1);
+            $response->event_id = generateEventID($rows['event_id']);
+            $response->event_name = $rows1['event_name'];
+
+            // Get users registered with the team
+            $query2 = "SELECT * FROM `event_registration` WHERE `team_id` = '$team_id' ";
+            $res2 = mysqli_query($conn, $query2);
+            $count2 = mysqli_num_rows($res2);
+            $i = 0;
+            while ($count2) {
+                $rows2 = mysqli_fetch_assoc($res2);
+                $query3 = "SELECT * FROM `users` WHERE `user_id` = '$rows2[user_id]' ";
+                $res3 = mysqli_query($conn, $query3);
+                $rows3 = mysqli_fetch_assoc($res3);
+                $users[$i]['user_id'] = generateUserID($rows3['user_id']);
+                $users[$i]['name'] = $rows3['name'];
+                $count2--;
+                $i++;
+            }
+
+            // Send users array as response
+            $response->users = $users;
+        } else {
+            $response->message = "Invalid Team ID";
+        }
+    } else {
+        $response->message = "Invalid Team ID";
     }
-
-    // Send users array as response
-    $response->users = $users;
 
     $response_JSON = json_encode($response);
     echo $response_JSON;
