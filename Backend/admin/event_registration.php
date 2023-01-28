@@ -69,6 +69,7 @@ function generateEventIDReverse($final_id)
 
 // Define response object
 $response = array();
+$final_response = array();
 
 // Send admin token to access Club Admin
 $admin_token = $_POST['admin_token'];
@@ -77,6 +78,9 @@ $admin_token = $_POST['admin_token'];
 $check = "SELECT * FROM `admins` WHERE `admin_token` = '$admin_token' ";
 $result = mysqli_query($conn, $check);
 $count = mysqli_num_rows($result);
+
+$total_users = 0;
+$total_teams = 0;
 
 // Validate admin token
 if ($count == 1) {
@@ -95,17 +99,18 @@ if ($count == 1) {
     $res1 = mysqli_query($conn, $query);
     $count = mysqli_num_rows($res1);
     $rows = mysqli_fetch_assoc($res1);
-    $event_name = $rows['event_name'];
-    $team_event = $rows['team_event'];
 
     // If it is a valid club event
     if ($count) {
+        $event_name = $rows['event_name'];
+        $team_event = $rows['team_event'];
         $query1 = "SELECT * FROM `event_registration` WHERE `event_id` = '$event_id' ";
         $res2 = mysqli_query($conn, $query1);
         $count2 = mysqli_num_rows($res2);
 
         $i = 0;
         while ($count2) {
+
             $rows2 = mysqli_fetch_assoc($res2);
             $rows2['event_id'] = generateEventID($rows2['event_id']);
             $response[$i]['event_id'] = $rows2['event_id'];
@@ -125,29 +130,39 @@ if ($count == 1) {
                 $response[$i]['team_name'] = $rows4['team_name'];
                 $rows2['team_id'] = generateTeamID($rows2['team_id']);
                 $response[$i]['team_id'] = $rows2['team_id'];
-
-                // exit;
             } else {
                 // if ($rows2['team_id'] != 0)
                 //     $rows2['team_id'] = generateTeamID($rows2['team_id']);
                 $response[$i]['team_id'] = $rows2['team_id'];
+                $total_users++;
             }
             $count2--;
             $i++;
 
         }
     } else {
-        $response['message'] = "Invalid Event ID with the Club";
+        $final_response['message'] = "Invalid Event ID with the Club";
     }
 
-    $response_JSON = json_encode($response);
-    echo $response_JSON;
+    if ($team_event) {
+        $query4 = "SELECT DISTINCT `team_id` FROM `event_registration` WHERE `team_id`!= '0' ";
+        $res5 = mysqli_query($conn, $query4);
+        $total_teams = mysqli_num_rows($res5);
+        $final_response['total_teams'] = $total_teams;
+    } else {
+        // echo "Total users: ";
+        $final_response['total_users'] = $total_users;
+    }
+
+    $final_response['registration'] = $response;
+    // echo $response_JSON;
+    $final_response_JSON = json_encode($final_response);
+    echo $final_response_JSON;
 }
 // If invalid token or session
 else {
-    $response['message'] = "Invalid Token or Session!";
-    $response_JSON = json_encode($response);
-    echo $response_JSON;
+    $final_response['message'] = "Invalid Token or Session!";
+    echo $final_response_JSON;
     exit;
 }
 
