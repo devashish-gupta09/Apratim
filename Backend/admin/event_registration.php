@@ -92,68 +92,75 @@ if ($count == 1) {
 
     // Send event_id to find event registration details
     $event_id = $_POST['event_id'];
-    $event_id = generateEventIDReverse($event_id);
+    // Check for valid Event ID string size
+    if (strlen($event_id) == 9) {
+        $event_id = generateEventIDReverse($event_id);
 
-    // Check if it is a valid club event or not
-    $query = "SELECT * FROM `events` WHERE `club_id` = '$club_id' AND `event_id` = '$event_id' ";
-    $res1 = mysqli_query($conn, $query);
-    $count = mysqli_num_rows($res1);
-    $rows = mysqli_fetch_assoc($res1);
+        // Check if it is a valid club event or not
+        $query = "SELECT * FROM `events` WHERE `club_id` = '$club_id' AND `event_id` = '$event_id' ";
+        $res1 = mysqli_query($conn, $query);
+        $count = mysqli_num_rows($res1);
+        $rows = mysqli_fetch_assoc($res1);
 
-    // If it is a valid club event
-    if ($count) {
-        $event_name = $rows['event_name'];
-        $team_event = $rows['team_event'];
-        $query1 = "SELECT * FROM `event_registration` WHERE `event_id` = '$event_id' ";
-        $res2 = mysqli_query($conn, $query1);
-        $count2 = mysqli_num_rows($res2);
+        // If it is a valid club event
+        if ($count) {
+            $event_name = $rows['event_name'];
+            $team_event = $rows['team_event'];
+            $query1 = "SELECT * FROM `event_registration` WHERE `event_id` = '$event_id' ";
+            $res2 = mysqli_query($conn, $query1);
+            $count2 = mysqli_num_rows($res2);
 
-        $i = 0;
-        while ($count2) {
-            $rows2 = mysqli_fetch_assoc($res2);
-            $rows2['event_id'] = generateEventID($rows2['event_id']);
-            $response[$i]['event_id'] = $rows2['event_id'];
-            $response[$i]['event_name'] = $event_name;
-            $query2 = "SELECT * FROM `users` WHERE `user_id` = '$rows2[user_id]'";
-            $res3 = mysqli_query($conn, $query2);
-            $rows3 = mysqli_fetch_assoc($res3);
-            $response[$i]['user_name'] = $rows3['name'];
-            $rows2['user_id'] = generateUserID($rows2['user_id']);
-            $response[$i]['user_id'] = $rows2['user_id'];
-            $response[$i]['registration_time'] = $rows2['registration_time'];
+            $i = 0;
+            while ($count2) {
+                $rows2 = mysqli_fetch_assoc($res2);
+                $rows2['event_id'] = generateEventID($rows2['event_id']);
+                $response[$i]['event_id'] = $rows2['event_id'];
+                $response[$i]['event_name'] = $event_name;
+                $query2 = "SELECT * FROM `users` WHERE `user_id` = '$rows2[user_id]'";
+                $res3 = mysqli_query($conn, $query2);
+                $rows3 = mysqli_fetch_assoc($res3);
+                $response[$i]['user_name'] = $rows3['name'];
+                $rows2['user_id'] = generateUserID($rows2['user_id']);
+                $response[$i]['user_id'] = $rows2['user_id'];
+                $response[$i]['registration_time'] = $rows2['registration_time'];
 
-            // For team events
+                // For team events
+                if ($team_event) {
+                    $query3 = "SELECT * FROM `teams` WHERE `team_id` = '$rows2[team_id]'";
+                    $res4 = mysqli_query($conn, $query3);
+                    $rows4 = mysqli_fetch_assoc($res4);
+                    $response[$i]['team_name'] = $rows4['team_name'];
+                    $rows2['team_id'] = generateTeamID($rows2['team_id']);
+                    $response[$i]['team_id'] = $rows2['team_id'];
+                }
+                // For non-team events
+                else {
+                    $response[$i]['team_id'] = $rows2['team_id'];
+                    $total_users++;
+                }
+                $count2--;
+                $i++;
+
+            }
+
+            // Count total teams registered
             if ($team_event) {
-                $query3 = "SELECT * FROM `teams` WHERE `team_id` = '$rows2[team_id]'";
-                $res4 = mysqli_query($conn, $query3);
-                $rows4 = mysqli_fetch_assoc($res4);
-                $response[$i]['team_name'] = $rows4['team_name'];
-                $rows2['team_id'] = generateTeamID($rows2['team_id']);
-                $response[$i]['team_id'] = $rows2['team_id'];
+                $query4 = "SELECT DISTINCT `team_id` FROM `event_registration` WHERE `team_id`!= '0' ";
+                $res5 = mysqli_query($conn, $query4);
+                $total_teams = mysqli_num_rows($res5);
+                $final_response['total_teams'] = $total_teams;
             }
-            // For non-team events
+            // Count total users registered
             else {
-                $response[$i]['team_id'] = $rows2['team_id'];
-                $total_users++;
+                $final_response['total_users'] = $total_users;
             }
-            $count2--;
-            $i++;
 
+        } else {
+            $final_response['message'] = "Invalid Event ID with the Club";
         }
-    } else {
-        $final_response['message'] = "Invalid Event ID with the Club";
-    }
 
-    // Count total teams registered
-    if ($team_event) {
-        $query4 = "SELECT DISTINCT `team_id` FROM `event_registration` WHERE `team_id`!= '0' ";
-        $res5 = mysqli_query($conn, $query4);
-        $total_teams = mysqli_num_rows($res5);
-        $final_response['total_teams'] = $total_teams;
-    }
-    // Count total users registered
-    else {
-        $final_response['total_users'] = $total_users;
+    } else {
+        $final_response['message'] = "Invalid Event ID";
     }
 
     // Send response json
