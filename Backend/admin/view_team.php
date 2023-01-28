@@ -40,6 +40,20 @@ function generateEventID($event_id)
     return $final_id;
 }
 
+function generateUserID($user_id)
+{
+    if ($user_id < 10) {
+        $final_id = 'AP23-000' . $user_id;
+    } elseif ($user_id < 100) {
+        $final_id = 'AP23-00' . $user_id;
+    } elseif ($user_id < 1000) {
+        $final_id = 'AP23-0' . $user_id;
+    } else {
+        $final_id = 'AP23-' . $user_id;
+    }
+    return $final_id;
+}
+
 function generateTeamIDReverse($final_id)
 {
     $prefix = 'AP23-T';
@@ -95,7 +109,7 @@ if ($count == 1) {
         $query3 = "SELECT * FROM `users` WHERE `user_id` = '$rows2[user_id]' ";
         $res3 = mysqli_query($conn, $query3);
         $rows3 = mysqli_fetch_assoc($res3);
-        $users[$i]['user_id'] = $rows3['user_id'];
+        $users[$i]['user_id'] = generateUserID($rows3['user_id']);
         $users[$i]['name'] = $rows3['name'];
         $count2--;
         $i++;
